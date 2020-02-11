@@ -1,0 +1,33 @@
+﻿@model IEnumerable<Ecart.ViewModel.ShoppingViewModel>
+@{
+    ViewBag.Title = "Index";
+}
+
+    <div class="container">
+        <h2 class="text-center">Product List</h2>
+        @foreach(var item in Model)
+        {
+
+    <div class="col-md-4" >
+        <div style="text-align:center">
+            <h3>@item.ItemName</h3>
+        </div>
+        <div>
+            <div class="col-md-8">
+                <img src="@Url.Content(item.ImagePath)" width="200" height="200" />
+            </div>
+            <div class="col-md-4" style="text-align:left">
+                <b>@item.Description</b>
+            </div>
+        </div>
+
+        <div class="col-md-8" style="font-size:18px">
+            <b>@item.ItemPrice.ToString("#,##0.00 $")</b>
+        </div>
+        <div class="col-md-4" style="text-align:right; margin-bottom:10px">
+            <input type="button" name="AddToCart" value="Add to cart" class="btn btn-primary" itemid="@item.ItemID" id="btnAddToCart" onclick="AddToCart(this)" />
+        </div>
+    </div>
+
+        }
+    </div>
