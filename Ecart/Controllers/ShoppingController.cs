@@ -12,10 +12,12 @@ namespace Ecart.Controllers
     {
 
         private EcartDBEntities objEcartDBEntities;
+        private List<ShoppingCartModel> listOfShoppingCartModels;
         public ShoppingController()
         {
 
             objEcartDBEntities = new EcartDBEntities();
+            listOfShoppingCartModels = new List<ShoppingCartModel>();
         }
         // GET: Shopping
         public ActionResult Index()
@@ -37,6 +39,46 @@ namespace Ecart.Controllers
 
                                                                        ).ToList();
             return View(listOfShoppingViewModels);
+        }
+
+        [HttpPost]
+        public JsonResult Index (string ItemID)
+        {
+            ShoppingCartModel objShoppingCartModel = new ShoppingCartModel();
+            Item objItem = objEcartDBEntities.Items.Single(model => model.ItemID.ToString() == ItemID);
+            if(Session["CartCounter"] != null)
+            {
+                listOfShoppingCartModels = Session["CartItem"] as List<ShoppingCartModel>;
+            }
+
+            if(listOfShoppingCartModels.Any(model=>model.ItemID == ItemID))
+            {
+                objShoppingCartModel = listOfShoppingCartModels.Single(model => model.ItemID == ItemID);
+                objShoppingCartModel.Quantity = objShoppingCartModel.Quantity + 1;
+                objShoppingCartModel.Total = objShoppingCartModel.Quantity * objShoppingCartModel.UnitPrice;
+            }
+            else
+            {
+                objShoppingCartModel.ItemID = ItemID;
+                objShoppingCartModel.ImagePath = objItem.ImagePath;
+                objShoppingCartModel.ItemName = objItem.ItemName;
+                objShoppingCartModel.Quantity = 1;
+                objShoppingCartModel.Total = objItem.ItemPrice;
+                objShoppingCartModel.UnitPrice = objItem.ItemPrice;
+                listOfShoppingCartModels.Add(objShoppingCartModel);
+                
+            }
+
+            Session["CartCounter"] = listOfShoppingCartModels.Count;
+            Session["CartItem"] = listOfShoppingCartModels;
+            return Json(new { Success=true, Counter=listOfShoppingCartModels.Count}, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult ShoppingCart()
+        {
+            listOfShoppingCartModels= Session["CartItem"] as List<ShoppingCartModel>;
+          
+            return View(listOfShoppingCartModels);
         }
     }
 }
