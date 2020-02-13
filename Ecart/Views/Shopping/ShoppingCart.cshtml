@@ -2,8 +2,15 @@
 @{ 
     decimal TotalAmount = 0.00M;
 }
+
+
+
 <h2>Your cart</h2>
+
+@using (Html.BeginForm("AddOrder", "Shopping", FormMethod.Post))
+{ 
 <table class="table-condensed" style="width:100%">
+   
 
     @foreach (var item in Model)
     {
@@ -15,6 +22,7 @@
             </td>
             <td>
                 @item.ItemName
+                
             </td>
             <td style="text-align:right">
                 @item.Quantity.ToString("#,##0")
@@ -26,10 +34,12 @@
                 @item.Total.ToString("#,##0.00")
             </td>
         </tr>
+    
     }
+    
     <tr>
         <td colspan="4" style="text-align:right">
-            <h3>Total Amount</h3> 
+            <h3>Total Amount</h3>
         </td>
         <td style="text-align:right">
             <h3>@TotalAmount.ToString("#,##0.00")</h3>
@@ -38,8 +48,14 @@
 
     <tr style="text-align:right">
         <td colspan="5">
-            <input type="button" value="Checkout" name="Save" class="btn btn-primary" />
+            <input type="submit" value="Checkout" name="Save" class="btn btn-primary" id="SaveOrder" />
+        </td>
+    </tr>
+    <tr style="text-align:left">
+        <td colspan="5">
+            @Html.ActionLink("Back to shopping", "Index", "Shopping")
         </td>
     </tr>
 
 </table>
+}

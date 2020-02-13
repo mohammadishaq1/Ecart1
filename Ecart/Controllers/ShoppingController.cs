@@ -80,5 +80,34 @@ namespace Ecart.Controllers
           
             return View(listOfShoppingCartModels);
         }
+        [HttpPost]
+        public ActionResult AddOrder()
+        {
+            int OrderID = 0;
+            listOfShoppingCartModels = Session["CartItem"] as List<ShoppingCartModel>;
+            Order orderObj = new Order()
+            {
+                OrderDate = DateTime.Now,
+                OrderNumber = String.Format("{0:ddmmyyyyhhmmsss}", DateTime.Now)
+            };
+            objEcartDBEntities.Orders.Add(orderObj);
+            objEcartDBEntities.SaveChanges();
+            OrderID = orderObj.OrderID;
+            foreach(var item in listOfShoppingCartModels)
+            {
+                OrderDetail objOrderDetail = new OrderDetail();
+                objOrderDetail.Total = item.Total;
+                objOrderDetail.ItemID = item.ItemID;
+                objOrderDetail.OrderID = OrderID;
+                objOrderDetail.Quantity = item.Quantity;
+                objOrderDetail.UnitPrice = item.UnitPrice;
+                objEcartDBEntities.OrderDetails.Add(objOrderDetail);
+                objEcartDBEntities.SaveChanges();
+
+            }
+            Session["CartItem"] = null;
+            Session["CartCounter"] = null;
+            return RedirectToAction("Index");
+        }
     }
 }
